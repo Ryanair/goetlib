@@ -2,7 +2,6 @@ package logger
 
 import (
 	"github.com/Ryanair/gofrlib/log"
-	"go.uber.org/zap"
 )
 
 func NewLogConfiguration(logLevel string, application string, project string, projectGroup string) log.Configuration {
@@ -40,22 +39,22 @@ func InitialLambdaConfiguration(functionName string, logGroup string, logStream 
 
 func SetTraceId(traceId string) {
 	if traceId != "" {
-		log.With(zap.String("Body.context.trace.spanId", traceId))
-		log.With(zap.String("SpanId", traceId))
+		log.With("Body.context.trace.spanId", traceId)
+		log.With("SpanId", traceId)
 	}
 }
 
 func SetSpanId(spanId string) {
 	if spanId != "" {
-		log.With(zap.String("Body.context.trace.spanId", spanId))
-		log.With(zap.String("SpanId", spanId))
+		log.With("Body.context.trace.spanId", spanId)
+		log.With("SpanId", spanId)
 	}
 }
 
 func SetRequestInfo(method string, url string, route string, query string, userAgent string) {
-	log.WithCustomAttr("Body.context.origin.request.method", method)
-	log.WithCustomAttr("Body.context.origin.request.url", url)
-	log.WithCustomAttr("Body.context.origin.request.route", route)
-	log.WithCustomAttr("Body.context.origin.request.query", query)
-	log.WithCustomAttr("Body.context.origin.request.userAgent", userAgent)
+	log.With("Body.context.origin.request.method", method)
+	log.With("Body.context.origin.request.url", url)
+	log.With("Body.context.origin.request.route", route)
+	log.With("Body.context.origin.request.query", query)
+	log.With("Body.context.origin.request.userAgent", userAgent)
 }
