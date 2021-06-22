@@ -58,3 +58,9 @@ func SetRequestInfo(method string, url string, route string, query string, userA
 	log.With("Body.context.origin.request.query", query)
 	log.With("Body.context.origin.request.userAgent", userAgent)
 }
+
+func SetEvent(source string, body map[string]interface{}, params map[string]interface{}) {
+	log.With("Body.context.origin.event.eventSource", source)
+	log.With("Body.context.origin.event.eventBody", body)
+	log.With("Body.context.origin.event.eventParams", params)
+}
