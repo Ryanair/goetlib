@@ -1,97 +1,66 @@
 package logger
 
 import (
-	"fmt"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
+	"github.com/Ryanair/gofrlib/log"
 )
 
-var Log *zap.SugaredLogger
+func NewLogConfiguration(logLevel string, application string, project string, projectGroup string) log.Configuration {
+	logConfiguration := log.NewConfiguration(
+		logLevel,
+		application,
+		project,
+		projectGroup,
+		"")
+	return logConfiguration
+}
 
-func InitLogger(logLevel string, application string, function string, logGroup string, logStream string, vpc string,
-	env string) {
-	zap.NewProductionConfig()
-	rawLog, _ := buildConfig(logLevel).Build()
-	rawLog = rawLog.
-		WithOptions(zap.AddCallerSkip(1)).
-		With(zap.String("application", application)).
-		With(zap.String("function_name", function)).
-		With(zap.String("@log_group", logGroup)).
-		With(zap.String("@log_stream", logStream)).
-		With(zap.String("@vpc", vpc)).
-		With(zap.String("@env", env))
-	Log = rawLog.Sugar()
+func InitLogger(logConfiguration log.Configuration) {
+	log.Init(logConfiguration)
 }
 
 func InitLoggerTest() {
-	InitLogger("debug", "test", "function", "log_group", "log_stream", "vpc", "env")
+	logConfiguration := log.NewConfiguration(
+		"debug",
+		"test",
+		"test-project",
+		"test-project-group",
+		"")
+
+	InitLogger(logConfiguration)
 }
 
-func Debug(msg string, vars ...interface{}) {
-	Log.Debugf(msg, vars...)
+func InitialLambdaConfiguration(functionName string, logGroup string, logStream string, vpc string, env string) {
+	log.With("function_name", functionName)
+	log.With("@log_group", logGroup)
+	log.With("@log_stream", logStream)
+	log.With("@vpc", vpc)
+	log.With("@env", env)
 }
 
-func Info(msg string, vars ...interface{}) {
-	Log.Infof(msg, vars...)
-}
-
-func Warn(msg string, vars ...interface{}) {
-	Log.Warnf(msg, vars...)
-}
-
-func Error(msg string, vars ...interface{}) {
-	Log.Errorf(msg, vars...)
-}
-
-func AddToContext(k string, v string) {
-	if v != "" {
-		Log = Log.With(zap.String(k, v))
+func SetTraceId(traceId string) {
+	if traceId != "" {
+		log.With("Body.context.trace.spanId", traceId)
+		log.With("SpanId", traceId)
 	}
 }
 
-func AddRefToContext(k string, v *string) {
-	if v != nil {
-		Log = Log.With(zap.String(k, *v))
+func SetSpanId(spanId string) {
+	if spanId != "" {
+		log.With("Body.context.trace.spanId", spanId)
+		log.With("SpanId", spanId)
 	}
 }
 
-func buildConfig(logLevel string) zap.Config {
-	return zap.Config{
-		Level:       readLogLevel(logLevel),
-		Development: false,
-		Sampling: &zap.SamplingConfig{
-			Initial:    100,
-			Thereafter: 100,
-		},
-		Encoding:         "json",
-		EncoderConfig:    buildEncoderConfig(),
-		OutputPaths:      []string{"stderr"},
-		ErrorOutputPaths: []string{"stderr"},
-	}
+func SetRequestInfo(method string, url string, route string, query string, userAgent string) {
+	log.With("Body.context.origin.request.method", method)
+	log.With("Body.context.origin.request.url", url)
+	log.With("Body.context.origin.request.route", route)
+	log.With("Body.context.origin.request.query", query)
+	log.With("Body.context.origin.request.userAgent", userAgent)
 }
 
-func readLogLevel(logLevel string) zap.AtomicLevel {
-	logAtomicLevel := zap.AtomicLevel{}
-	if err := logAtomicLevel.UnmarshalText([]byte(logLevel)); err != nil {
-		fmt.Printf("malformed log level: %+v\n", logLevel)
-		logAtomicLevel = zap.NewAtomicLevelAt(zap.ErrorLevel)
-	}
-
-	return logAtomicLevel
-}
-
-func buildEncoderConfig() zapcore.EncoderConfig {
-	return zapcore.EncoderConfig{
-		TimeKey:        "@timestamp",
-		LevelKey:       "level",
-		NameKey:        "logger",
-		CallerKey:      "logger_name",
-		MessageKey:     "message",
-		StacktraceKey:  "stack_trace",
-		LineEnding:     zapcore.DefaultLineEnding,
-		EncodeLevel:    zapcore.CapitalLevelEncoder,
-		EncodeTime:     zapcore.ISO8601TimeEncoder,
-		EncodeDuration: zapcore.SecondsDurationEncoder,
-		EncodeCaller:   zapcore.ShortCallerEncoder,
-	}
+func SetEvent(source string, body map[string]interface{}, params map[string]interface{}) {
+	log.With("Body.context.origin.event.eventSource", source)
+	log.With("Body.context.origin.event.eventBody", body)
+	log.With("Body.context.origin.event.eventParams", params)
 }

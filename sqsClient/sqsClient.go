@@ -2,7 +2,7 @@ package sqsClient
 
 import (
 	"errors"
-	"github.com/Ryanair/goetlib/logger"
+	"github.com/Ryanair/gofrlib/log"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"strings"
@@ -35,10 +35,10 @@ func (scheduler *SqsPublisher) Publish(body string) error {
 		QueueUrl:    scheduler.queueUrl,
 	}
 
-	logger.Debug("Sending message to SQS: %+v", input)
+	log.Debug("Sending message to SQS: %+v", input)
 	_, err := scheduler.client.SendMessage(input)
 	if err != nil {
-		logger.Error("Error sending message %+v caused error %+v", input, err)
+		log.Error("Error sending message %+v caused error %+v", input, err)
 		return err
 	}
 	return nil
