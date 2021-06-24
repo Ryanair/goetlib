@@ -34,13 +34,13 @@ func (m *rowsMock) Scan(dest ...interface{}) error {
 func TestConvertToJson(t *testing.T) {
 	//Given
 	rows := new(rowsMock)
-	columns := []string{"event_perfno_i"}
+	columns := []string{"column_id"}
 	rows.On("Columns").Return(columns, nil)
 	rows.On("Next").Return(true).Once()
 	rows.On("Next").Return(true).Once()
 	rows.On("Next").Return(false)
 	rows.On("Scan", mock.Anything).Return(nil)
-	expected := ([]map[string]interface{}{{"event_perfno_i": 5740147}, {"event_perfno_i": 5740148}})
+	expected := ([]map[string]interface{}{{"column_id": 5740147}, {"column_id": 5740148}})
 
 	//When
 	result, _ := ToMap(rows)
