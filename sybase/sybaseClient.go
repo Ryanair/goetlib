@@ -31,6 +31,7 @@ func (c *SyBaseClient) moveToSchema(db *sql.DB) error {
 	return err
 }
 
+//TODO(pozuecoa): deprecate
 func (c *SyBaseClient) Query(sql string) (*sql.Rows, error) {
 	db := c.getDB()
 	if err := c.moveToSchema(db); err != nil {
@@ -38,4 +39,17 @@ func (c *SyBaseClient) Query(sql string) (*sql.Rows, error) {
 	}
 	defer db.Close()
 	return db.Query(sql)
+}
+
+func (c *SyBaseClient) QueryMap(sql string) ([]map[string]interface{}, error) {
+	rows, err := c.Query(sql)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return ToMap(rows)
 }
