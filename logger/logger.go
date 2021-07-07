@@ -2,6 +2,7 @@ package logger
 
 import (
 	"github.com/Ryanair/gofrlib/log"
+	"github.com/aws/aws-lambda-go/events"
 )
 
 func NewLogConfiguration(logLevel string, application string, project string, projectGroup string) log.Configuration {
@@ -39,8 +40,8 @@ func InitialLambdaConfiguration(functionName string, logGroup string, logStream 
 
 func SetTraceId(traceId string) {
 	if traceId != "" {
-		log.With("Body.context.trace.spanId", traceId)
-		log.With("SpanId", traceId)
+		log.With("Body.context.trace.traceId", traceId)
+		log.With("TraceId", traceId)
 	}
 }
 
@@ -59,8 +60,22 @@ func SetRequestInfo(method string, url string, route string, query string, userA
 	log.With("Body.context.origin.request.userAgent", userAgent)
 }
 
-func SetEvent(source string, body map[string]interface{}, params map[string]interface{}) {
+func SetEvent(source string, body string, params map[string]string) {
 	log.With("Body.context.origin.event.eventSource", source)
 	log.With("Body.context.origin.event.eventBody", body)
 	log.With("Body.context.origin.event.eventParams", params)
+}
+
+func SetSQSEvent(event events.SQSMessage)  {
+	log.With("Body.context.origin.event.eventSource", event.EventSource)
+	log.With("Body.context.origin.event.eventBody", event.Body)
+	log.With("Body.context.origin.event.eventParams", event.Attributes)
+}
+
+func SetApigwRequest(event events.APIGatewayV2HTTPRequest) {
+	log.With("Body.context.origin.request.method", event.RequestContext.HTTP.Method)
+	log.With("Body.context.origin.request.url", event.RequestContext.DomainName)
+	log.With("Body.context.origin.request.route", event.RequestContext.RouteKey)
+	log.With("Body.context.origin.request.query", event.RawQueryString)
+	log.With("Body.context.origin.request.userAgent", event.RequestContext.HTTP.UserAgent)
 }
