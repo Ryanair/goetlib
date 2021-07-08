@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"encoding/json"
 	"github.com/Ryanair/gofrlib/log"
 	"github.com/aws/aws-lambda-go/events"
 )
@@ -69,7 +70,9 @@ func SetEvent(source string, body string, params map[string]string) {
 func SetSQSEvent(event events.SQSMessage)  {
 	log.With("Body.context.origin.event.eventSource", event.EventSource)
 	log.With("Body.context.origin.event.eventBody", event.Body)
-	log.With("Body.context.origin.event.eventParams", event.Attributes)
+
+	raw, _ := json.Marshal(event.Attributes)
+	log.With("Body.context.origin.event.eventParams", string(raw))
 }
 
 func SetApigwRequest(event events.APIGatewayV2HTTPRequest) {
