@@ -21,8 +21,12 @@ func NewSyBaseClient(conn driver.Connector, schema string) *SyBaseClient {
 	}
 }
 
+var db *sql.DB
+
 func (c *SyBaseClient) getDB() *sql.DB {
-	db := sql.OpenDB(c.conn)
+	if db == nil {
+		db = sql.OpenDB(c.conn)
+	}
 	return db
 }
 
@@ -37,7 +41,6 @@ func (c *SyBaseClient) Query(sql string) (*sql.Rows, error) {
 	if err := c.moveToSchema(db); err != nil {
 		return nil, err
 	}
-	defer db.Close()
 	return db.Query(sql)
 }
 
