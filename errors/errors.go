@@ -24,6 +24,10 @@ func ToUnauthorizedResponse(event events.APIGatewayV2HTTPRequest) events.APIGate
 	return ToResponseVoid(http.StatusUnauthorized)
 }
 
+func ToForbiddenResponse(event events.APIGatewayV2HTTPRequest) events.APIGatewayV2HTTPResponse {
+	return ToResponseVoid(http.StatusForbidden)
+}
+
 func ToNotFoundResponse(event events.APIGatewayV2HTTPRequest, message string) events.APIGatewayV2HTTPResponse {
 	return ToResponseWithBody(event, http.StatusNotFound, message)
 }
