@@ -3,7 +3,7 @@ module github.com/Ryanair/goetlib
 go 1.16
 
 require (
-	github.com/Ryanair/gofrlib v1.0.5
+	github.com/Ryanair/gofrlib v1.0.16.3
 	github.com/aws/aws-lambda-go v1.24.0
 	github.com/aws/aws-sdk-go v1.38.63
 	github.com/kr/pretty v0.2.1 // indirect
