@@ -6,12 +6,13 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
-func NewLogConfiguration(logLevel string, application string, project string, projectGroup string) log.Configuration {
+func NewLogConfiguration(logLevel string, application string, project string, projectGroup string, version string) log.Configuration {
 	logConfiguration := log.NewConfiguration(
 		logLevel,
 		application,
 		project,
 		projectGroup,
+		version,
 		"")
 	return logConfiguration
 }
@@ -26,6 +27,7 @@ func InitLoggerTest() {
 		"test",
 		"test-project",
 		"test-project-group",
+		"version",
 		"")
 
 	InitLogger(logConfiguration)
@@ -67,7 +69,7 @@ func SetEvent(source string, body string, params map[string]string) {
 	log.With("Body.context.origin.event.eventParams", params)
 }
 
-func SetSQSEvent(event events.SQSMessage)  {
+func SetSQSEvent(event events.SQSMessage) {
 	log.With("Body.context.origin.event.eventSource", event.EventSource)
 	log.With("Body.context.origin.event.eventBody", event.Body)
 
